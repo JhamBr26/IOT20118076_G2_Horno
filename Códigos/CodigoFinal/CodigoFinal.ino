@@ -1,35 +1,34 @@
-#include <LiquidCrystal_I2C.h>
-#include <WiFi.h>
-#include <PubSubClient.h>
-#include <DHTesp.h>
+#include <LiquidCrystal_I2C.h>  // Librería para el LCD
+#include <WiFi.h>               // Librería para el WiFi del ESP32
+#include <PubSubClient.h>       // Librería para conexión con el servidor MQTT
+#include <DHTesp.h>             // Librería para el DHT11
 
 // CONSTANTES
-#define DHT 4   // Se define el pin del sensor de temperatura y humedad
-#define MQ9 32  // Se define el pin del sensor de CO2
-#define POS 19  // Se define el pin del sensor de posición
-#define RELAY 2
+#define DHT 4    // Se define el pin del sensor de temperatura y humedad
+#define MQ9 32   // Se define el pin del sensor de CO2
+#define POS 19   // Se define el pin del sensor de posición
+#define RELAY 2  // Se define el pin del relay
 
 // VARIABLES
-// int RELAY = 2;
 float temperatura = 0;  // Se inicializa la variable de la temperatura
 float humedad = 0;      // Se inicializa la variable de la humedad
 bool cerrado = false;   // Se inicializa la variable de la posición de la puerta
 int co = 0;             // Se inicializa la variable de la concentración de CO2
-float setpoint = 0;
-const float band = 0;
+float setpoint = 0;     // Se inicializa el umbral de control por temperatura
+const float band = 0;   // Se define la banda de tolerancia del control por temperatura
 
 // Se inicializa el dht
 DHTesp dht;  // Se crea un objeto del tipo DHTesp para manejar el sensor DHT11
 
-// Create the lcd object address 0x3F and 16 columns x 2 rows
+// Se crea el objeto LCD con dirección 0x3F y 16 columnas x 2 filas
 LiquidCrystal_I2C lcd(0x27, 16, 2);  //
 
 // Configuración de la red WiFi
-const char* ssid = "GalaxyA205C7D";
-const char* password = "xwcs2389";
+const char* ssid = "TP-LINK_7D36DE";
+const char* password = "30744738";
 
 // Configuración del servidor EMQ X
-const char* mqtt_server = "192.168.182.214";
+const char* mqtt_server = "192.168.1.5";
 const int mqtt_port = 1883;
 const char* mqtt_user = "admin";
 const char* mqtt_password = "admin123";
@@ -61,27 +60,28 @@ void setup() {
   client.setCallback(callback);
 
   while (!client.connected()) {
-    Serial.println("Connecting to MQTT server...");
+    Serial.println("Conectando al servidor MQTT...");
     if (client.connect("ESP32", "admin", "admin123")) {
-      Serial.println("Connected to MQTT server");
+      Serial.println("Conectado al servidor MQTT");
       client.subscribe("esp32/output");
       client.publish("esp32/output", "Mensaje de prueba");
     } else {
-      Serial.print("Failed to connect to MQTT server, rc=");
+      Serial.print("Falló la conexión al servidor MQTT, rc=");
       Serial.println(client.state());
       delay(5000);
     }
   }
 
-  // Initialize the LCD connected
+  // Se inicializa el LCD
   lcd.begin();
 
-  // Turn on the backlight on LCD.
+  // Se enciende la luz del LCD
   lcd.backlight();
 }
 
 void loop() {
 
+  // Si no existe conexión con el servidor MQTT se reintenta la conexión
   if (!client.connected()) {
     reconnect();
   }
@@ -93,12 +93,6 @@ void loop() {
   humedad = data.humidity;                          // Se actualiza la variable de la humedad
   cerrado = digitalRead(POS);                       // Se lee la posición de la puerta
   co = map(analogRead(MQ9), 0, 4095, 0, 100);       // Se lee la concentración de CO2 y se mapea a un rango de 0 a 100
-
-  // if(cerrado == 1) {
-  //   RELAY = 14;
-  // } else if(cerrado == 0) {
-  //   RELAY = 2;
-  // }
 
   //Salida Serial
   Serial.print("Temperatura: ");  // Se envía un mensaje por la comunicación serial indicando que se va a imprimir la temperatura
@@ -112,8 +106,8 @@ void loop() {
 
   // Publicación de los datos en el servidor MQTT
   if (!isnan(temperatura)) {
-    String message = "{\"temperatura\":" + String(temperatura) + "}";
-    client.publish("esp32/temperatura", message.c_str());
+    String message = "{\"temperatura\":" + String(temperatura) + "}";  // Se crea un String en formato JSON que contiene los datos que deseamos enviar
+    client.publish("esp32/temperatura", message.c_str());              // Se publica el mensaje en el servidor MQTT dentro del tópico esp32/temperatura
     Serial.println("Datos de temperatura publicados en el servidor MQTT");
   } else {
     Serial.println("Error al leer los datos de temperatura");
@@ -143,9 +137,6 @@ void loop() {
     Serial.println("Error al leer los datos de co");
   }
 
-  // Limpiar la pantalla LCD
-  // lcd.clear();
-
   // Imprimir los valores de temperatura, humedad, cerrado y co en la pantalla LCD
   lcd.setCursor(0, 0);
   lcd.print("Temp: ");
@@ -166,42 +157,58 @@ void loop() {
   lcd.print(co);
   lcd.print("%");
 
-
+  // Se realiza un autoscroll para mostrar todos los datos en el LCD
   lcd.autoscroll();
 
-  // Espera de 5 segundos
+  // Espera de 1 segundo
   delay(1000);
 }
 
+// Esta función es el callback que se ejecuta cuando llega un mensaje al cliente MQTT
 void callback(char* topic, byte* payload, unsigned int length) {
-  Serial.print("Message arrived [");
+  // Imprime el mensaje recibido y el tema al que pertenece
+  Serial.print("Mensaje recibido [");
   Serial.print(topic);
   Serial.print("] ");
+
+  // Crea una variable String para almacenar el mensaje recibido
   String messageTemp;
 
+  // Recorre los bytes del mensaje recibido y los imprime en el monitor serial
   for (int i = 0; i < length; i++) {
     Serial.print((char)payload[i]);
+    // Agrega cada byte del mensaje a la variable messageTemp
     messageTemp += (char)payload[i];
   }
-  Serial.println();
 
+  // Verifica si el tema del mensaje recibido es "esp32/output"
   if (String(topic) == "esp32/output") {
+    // Si el mensaje es "Encendido", activa el relé y publica un mensaje en el tema "esp32/foco"
     if (messageTemp == "Encendido") {
       digitalWrite(RELAY, HIGH);
       client.publish("esp32/foco", "Encendido");
-    } else if (messageTemp == "Apagado") {
+    }
+    // Si el mensaje es "Apagado", desactiva el relé y publica un mensaje en el tema "esp32/foco"
+    else if (messageTemp == "Apagado") {
       digitalWrite(RELAY, LOW);
       client.publish("esp32/foco", "Apagado");
-    } else {
-      // Control On/Off temperatura
+    }
+    // Si el mensaje no es "Encendido" ni "Apagado", se asume que es el valor deseado del setpoint para controlar la temperatura
+    else {
+      // Imprime el valor deseado del setpoint en el monitor serial
       Serial.print("Cambiando el setpoint a ");
       Serial.println(messageTemp);
+      // Convierte el valor deseado del setpoint a un entero y lo guarda en la variable setpoint
       setpoint = messageTemp.toInt();
+      // Imprime el valor actual de setpoint en el monitor serial
       Serial.println(setpoint);
+      // Si la temperatura actual es mayor que el setpoint más la banda de tolerancia, se apaga el relé y se publica un mensaje en el tema "esp32/foco"
       if (temperatura > setpoint + band) {
         digitalWrite(RELAY, LOW);
         client.publish("esp32/foco", "Apagado");
-      } else if (temperatura < setpoint - band) {
+      }
+      // Si la temperatura actual es menor que el setpoint menos la banda de tolerancia, se enciende el relé y se publica un mensaje en el tema "esp32/foco"
+      else if (temperatura < setpoint - band) {
         digitalWrite(RELAY, HIGH);
         client.publish("esp32/foco", "Encendido");
       }
@@ -210,15 +217,15 @@ void callback(char* topic, byte* payload, unsigned int length) {
 }
 
 void reconnect() {
-  // Loop until we're reconnected
+  // Loop que se ejecuta hasta que se haya reconectado al servidor MQTT
   while (!client.connected()) {
-    Serial.println("Connecting to MQTT server...");
+    Serial.println("Conectando al servidor MQTT...");
     if (client.connect("ESP32", "admin", "admin123")) {
-      Serial.println("Connected to MQTT server");
+      Serial.println("Conectado al servidor MQTT");
       client.subscribe("esp32/output");
       client.publish("esp32/output", "Mensaje de prueba");
     } else {
-      Serial.print("Failed to connect to MQTT server, rc=");
+      Serial.print("Falló la conexión al servidor MQTT, rc=");
       Serial.println(client.state());
       delay(5000);
     }
