@@ -1,0 +1,23 @@
+services:
+  # Configuración del servicio EMQX
+  emqx:
+    container_name: emqx
+    image: emqx/emqx:5.0.16
+    restart: always
+    # Mapeo de puertos para permitir la comunicación con el host
+    ports:
+      - 1883:1883
+      - 8083:8083
+      - 18083:18083
+
+  # Configuración del servicio Node-RED
+  nodered:
+    container_name: node-red
+    image: nodered/node-red:2.2.3
+    restart: always
+    # Mapeo de puerto para permitir la comunicación con el host
+    ports:
+      - 1880:1880
+    # Montaje de un volumen para permitir la persistencia de los flujos y la configuración de Node-RED
+    volumes:
+      - ./nodered/:/data
