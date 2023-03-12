@@ -1,0 +1,1060 @@
+[
+    {
+        "id": "db439c115e9e07ca",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "362680197e2bc301",
+        "type": "mqtt in",
+        "z": "db439c115e9e07ca",
+        "name": "",
+        "topic": "esp32/temperatura",
+        "qos": "0",
+        "datatype": "auto",
+        "broker": "bbe3758819d34835",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 150,
+        "y": 160,
+        "wires": [
+            [
+                "b37b307a75ba4f4d"
+            ]
+        ]
+    },
+    {
+        "id": "6c8be704149c31a2",
+        "type": "mqtt in",
+        "z": "db439c115e9e07ca",
+        "name": "",
+        "topic": "esp32/humedad",
+        "qos": "0",
+        "datatype": "auto",
+        "broker": "bbe3758819d34835",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 140,
+        "y": 260,
+        "wires": [
+            [
+                "4751b1ffb2c7879d"
+            ]
+        ]
+    },
+    {
+        "id": "7f90623e6854d3ee",
+        "type": "mqtt in",
+        "z": "db439c115e9e07ca",
+        "name": "",
+        "topic": "esp32/posicion",
+        "qos": "0",
+        "datatype": "auto",
+        "broker": "bbe3758819d34835",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 140,
+        "y": 360,
+        "wires": [
+            [
+                "aeee661c823c0c4f",
+                "b901d9de733b4407"
+            ]
+        ]
+    },
+    {
+        "id": "6ab8196b3265bc96",
+        "type": "mqtt in",
+        "z": "db439c115e9e07ca",
+        "name": "",
+        "topic": "esp32/co",
+        "qos": "0",
+        "datatype": "auto",
+        "broker": "bbe3758819d34835",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 120,
+        "y": 460,
+        "wires": [
+            [
+                "3c688124cd421aac"
+            ]
+        ]
+    },
+    {
+        "id": "fb1fedccb1fc1241",
+        "type": "ui_gauge",
+        "z": "db439c115e9e07ca",
+        "name": "",
+        "group": "b2adfc4191121edd",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Temperatura en Celsius",
+        "label": "ºC",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "100",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 650,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "af1bd34ab645816b",
+        "type": "ui_gauge",
+        "z": "db439c115e9e07ca",
+        "name": "",
+        "group": "31a6b9c47205aca9",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Porcentaje de Humedad",
+        "label": "%",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "100",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 650,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "b37b307a75ba4f4d",
+        "type": "function",
+        "z": "db439c115e9e07ca",
+        "name": "Extraer temp",
+        "func": "// Parsear el payload como un objeto JSON\nvar payloadObj = JSON.parse(msg.payload);\n\n// Extraer la temperatura del objeto\nvar temperatura = payloadObj.temperatura;\n\n// Crear un nuevo mensaje con la temperatura extraída\nmsg.payload = temperatura;\n\n// Devolver el mensaje modificado\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 370,
+        "y": 160,
+        "wires": [
+            [
+                "fb1fedccb1fc1241",
+                "cbcf1439d46017a9",
+                "9f79da7b3245ac7b"
+            ]
+        ]
+    },
+    {
+        "id": "4751b1ffb2c7879d",
+        "type": "function",
+        "z": "db439c115e9e07ca",
+        "name": "Extraer hum",
+        "func": "// Parsear el payload como un objeto JSON\nvar payloadObj = JSON.parse(msg.payload);\n\n// Extraer la humedad del objeto\nvar humedad = payloadObj.humedad;\n\n// Crear un nuevo mensaje con la humedad extraída\nmsg.payload = humedad;\n\n// Devolver el mensaje modificado\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 370,
+        "y": 260,
+        "wires": [
+            [
+                "af1bd34ab645816b",
+                "73e6e90641480053",
+                "9f79da7b3245ac7b"
+            ]
+        ]
+    },
+    {
+        "id": "aeee661c823c0c4f",
+        "type": "function",
+        "z": "db439c115e9e07ca",
+        "name": "Extraer pos",
+        "func": "// Parsear el payload como un objeto JSON\nvar payloadObj = JSON.parse(msg.payload);\n\n// Extraer la posicion del objeto\nvar posicion = payloadObj.posicion;\n\n// Crear un nuevo mensaje con la posicion extraída\nmsg.payload = posicion;\n\n// Devolver el mensaje modificado\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 370,
+        "y": 360,
+        "wires": [
+            [
+                "78226581779b1627",
+                "698716769366baf3",
+                "9f79da7b3245ac7b"
+            ]
+        ]
+    },
+    {
+        "id": "3c688124cd421aac",
+        "type": "function",
+        "z": "db439c115e9e07ca",
+        "name": "Extraer co",
+        "func": "var payload = JSON.parse(msg.payload);\n\n// Extrayendo el valor del CO del objeto\nmsg.payload = payload[\"monóxido de carbono\"];\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 370,
+        "y": 460,
+        "wires": [
+            [
+                "0c933754a6f752dc",
+                "dfffeea6e4915cda",
+                "9f79da7b3245ac7b"
+            ]
+        ]
+    },
+    {
+        "id": "0c933754a6f752dc",
+        "type": "ui_gauge",
+        "z": "db439c115e9e07ca",
+        "name": "",
+        "group": "67bdf8e2d34a61fa",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Porcentaje de CO",
+        "label": "%",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "100",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 630,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "cbcf1439d46017a9",
+        "type": "ui_chart",
+        "z": "db439c115e9e07ca",
+        "name": "",
+        "group": "b2adfc4191121edd",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "label": "Evolución Temperatura",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "100",
+        "removeOlder": "1",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 640,
+        "y": 180,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "73e6e90641480053",
+        "type": "ui_chart",
+        "z": "db439c115e9e07ca",
+        "name": "",
+        "group": "31a6b9c47205aca9",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "label": "Evolución Humedad",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "100",
+        "removeOlder": "1",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#ff7f0e",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 640,
+        "y": 280,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "dfffeea6e4915cda",
+        "type": "ui_chart",
+        "z": "db439c115e9e07ca",
+        "name": "",
+        "group": "67bdf8e2d34a61fa",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "label": "Evolución CO",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "100",
+        "removeOlder": "1",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#d62728",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 620,
+        "y": 480,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "baad4bc7d5abc7ab",
+        "type": "ui_switch",
+        "z": "db439c115e9e07ca",
+        "name": "",
+        "label": "Encendido/Apagado",
+        "tooltip": "",
+        "group": "aa2be71fdb279bc1",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "decouple": "false",
+        "topic": "esp32/output",
+        "topicType": "msg",
+        "style": "",
+        "onvalue": "Encendido",
+        "onvalueType": "str",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "Apagado",
+        "offvalueType": "str",
+        "officon": "",
+        "offcolor": "",
+        "animate": false,
+        "className": "",
+        "x": 1080,
+        "y": 200,
+        "wires": [
+            [
+                "46e7ada474d65879",
+                "9d6dd7ba3c3d51c3"
+            ]
+        ]
+    },
+    {
+        "id": "46e7ada474d65879",
+        "type": "ui_text",
+        "z": "db439c115e9e07ca",
+        "group": "aa2be71fdb279bc1",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Estado del horno: ",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 1370,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "78226581779b1627",
+        "type": "ui_chart",
+        "z": "db439c115e9e07ca",
+        "name": "",
+        "group": "a9e40686d841dd4c",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "label": "Posición de la Puerta",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "1",
+        "removeOlder": "1",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#2b9d2b",
+            "#2ca02c",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 640,
+        "y": 340,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "698716769366baf3",
+        "type": "function",
+        "z": "db439c115e9e07ca",
+        "name": "¿Puerta abierta?",
+        "func": "if(msg.payload == 1){\n    msg.payload = \"Abierta\";\n} else if(msg.payload == 0){\n    msg.payload= \"Cerrada\";\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 630,
+        "y": 380,
+        "wires": [
+            [
+                "82a8d848e3b06c9e"
+            ]
+        ]
+    },
+    {
+        "id": "82a8d848e3b06c9e",
+        "type": "ui_text",
+        "z": "db439c115e9e07ca",
+        "group": "a9e40686d841dd4c",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Estado de la Puerta: ",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 860,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "891ffe024c16a18b",
+        "type": "ui_text",
+        "z": "db439c115e9e07ca",
+        "group": "aea4105647a1b4cf",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Estado del horno: ",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 1310,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "9d6dd7ba3c3d51c3",
+        "type": "mqtt out",
+        "z": "db439c115e9e07ca",
+        "name": "",
+        "topic": "esp32/output",
+        "qos": "0",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "bbe3758819d34835",
+        "x": 1370,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "3ebd7cad78ed6ed0",
+        "type": "ui_text_input",
+        "z": "db439c115e9e07ca",
+        "name": "",
+        "label": "Ingrese temperatura límite",
+        "tooltip": "",
+        "group": "aea4105647a1b4cf",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "mode": "number",
+        "delay": 300,
+        "topic": "esp32/output",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "msg",
+        "x": 1090,
+        "y": 260,
+        "wires": [
+            [
+                "9d6dd7ba3c3d51c3"
+            ]
+        ]
+    },
+    {
+        "id": "461aba9b86e1c5d4",
+        "type": "mqtt in",
+        "z": "db439c115e9e07ca",
+        "name": "",
+        "topic": "esp32/foco",
+        "qos": "0",
+        "datatype": "auto",
+        "broker": "bbe3758819d34835",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 1100,
+        "y": 320,
+        "wires": [
+            [
+                "891ffe024c16a18b"
+            ]
+        ]
+    },
+    {
+        "id": "9f79da7b3245ac7b",
+        "type": "join",
+        "z": "db439c115e9e07ca",
+        "name": "",
+        "mode": "custom",
+        "build": "array",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "payload",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": false,
+        "timeout": "",
+        "count": "4",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 1030,
+        "y": 120,
+        "wires": [
+            [
+                "76f1480b789dfab7",
+                "d0f7ec9ce94445f2"
+            ]
+        ]
+    },
+    {
+        "id": "76f1480b789dfab7",
+        "type": "function",
+        "z": "db439c115e9e07ca",
+        "name": "Insertar datos",
+        "func": "var array = msg.payload;\n\nvar out = \"INSERT INTO esp32data (DEVICE,TEMPERATURA,HUMEDAD,MONOXIDO,POSICION) VALUES(\" + \"'ESP32',\" + array[0] + \",\" + array[1] + \",\" + array[3] + \",\" + array[2] + \");\"\n\nmsg.topic = out;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1220,
+        "y": 120,
+        "wires": [
+            [
+                "f1cdce7537088076"
+            ]
+        ]
+    },
+    {
+        "id": "f1cdce7537088076",
+        "type": "mysql",
+        "z": "db439c115e9e07ca",
+        "mydb": "9ce0bff7dffb0cea",
+        "name": "",
+        "x": 1430,
+        "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "d0f7ec9ce94445f2",
+        "type": "debug",
+        "z": "db439c115e9e07ca",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1410,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "0f2203a8b25f274d",
+        "type": "ui_ui_control",
+        "z": "db439c115e9e07ca",
+        "name": "",
+        "events": "all",
+        "x": 980,
+        "y": 580,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "b901d9de733b4407",
+        "type": "function",
+        "z": "db439c115e9e07ca",
+        "name": "¿Puerta abierta?",
+        "func": "// Parsear el payload como un objeto JSON\nvar payloadObj = JSON.parse(msg.payload);\n\n// Extraer la posicion del objeto\nvar posicion = payloadObj.posicion;\n\n// Crear un nuevo mensaje con la posicion extraída\nmsg.payload = posicion;\n\nif(msg.payload==1){\n    msg.payload = true;\n}else if(msg.payload==0){\n    msg.payload = false;\n}\n\n// Devolver el mensaje modificado\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 390,
+        "y": 580,
+        "wires": [
+            [
+                "22ce0de2dd80bcc9"
+            ]
+        ]
+    },
+    {
+        "id": "22ce0de2dd80bcc9",
+        "type": "switch",
+        "z": "db439c115e9e07ca",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "true"
+            },
+            {
+                "t": "false"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 590,
+        "y": 580,
+        "wires": [
+            [
+                "2654cf8e06f362d3"
+            ],
+            [
+                "48137f93ce02d51e"
+            ]
+        ]
+    },
+    {
+        "id": "2654cf8e06f362d3",
+        "type": "change",
+        "z": "db439c115e9e07ca",
+        "name": "Desactivar controles",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\"group\":{\"hide\":[\"Información_de_los_Sensores_Control_por_Temperatura\",\"Información_de_los_Sensores_Switch\",\"Información_de_los_Sensores_Tipo_de_Control\"]}}",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 780,
+        "y": 560,
+        "wires": [
+            [
+                "0f2203a8b25f274d"
+            ]
+        ]
+    },
+    {
+        "id": "48137f93ce02d51e",
+        "type": "change",
+        "z": "db439c115e9e07ca",
+        "name": "Activar controles",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\"group\":{\"show\":[\"Información_de_los_Sensores_Tipo_de_Control\"]}}",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 760,
+        "y": 600,
+        "wires": [
+            [
+                "0f2203a8b25f274d"
+            ]
+        ]
+    },
+    {
+        "id": "364df0d0fd94cfe4",
+        "type": "ui_dropdown",
+        "z": "db439c115e9e07ca",
+        "name": "",
+        "label": "Tipo de control",
+        "tooltip": "",
+        "place": "Seleccione una opción",
+        "group": "d9660f39c8927b5c",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "multiple": false,
+        "options": [
+            {
+                "label": "Seleccione una opción",
+                "value": "placeholder",
+                "type": "str"
+            },
+            {
+                "label": "Manual",
+                "value": true,
+                "type": "bool"
+            },
+            {
+                "label": "Automático",
+                "value": false,
+                "type": "bool"
+            }
+        ],
+        "payload": "",
+        "topic": "esp32/output",
+        "topicType": "msg",
+        "className": "",
+        "x": 920,
+        "y": 460,
+        "wires": [
+            [
+                "a3727bce18bcda66"
+            ]
+        ]
+    },
+    {
+        "id": "a3727bce18bcda66",
+        "type": "switch",
+        "z": "db439c115e9e07ca",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "true"
+            },
+            {
+                "t": "false"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1090,
+        "y": 460,
+        "wires": [
+            [
+                "db40f2cf64befd85"
+            ],
+            [
+                "f5dd66d4fe9e520d"
+            ]
+        ]
+    },
+    {
+        "id": "db40f2cf64befd85",
+        "type": "change",
+        "z": "db439c115e9e07ca",
+        "name": "Control manual",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\"group\":{\"show\":[\"Información_de_los_Sensores_Switch\"],\"hide\":[\"Información_de_los_Sensores_Control_por_Temperatura\"]}}",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1260,
+        "y": 440,
+        "wires": [
+            [
+                "d7694227e16790fb"
+            ]
+        ]
+    },
+    {
+        "id": "d7694227e16790fb",
+        "type": "ui_ui_control",
+        "z": "db439c115e9e07ca",
+        "name": "",
+        "events": "all",
+        "x": 1500,
+        "y": 460,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "f5dd66d4fe9e520d",
+        "type": "change",
+        "z": "db439c115e9e07ca",
+        "name": "Control por temperatura",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\"group\":{\"hide\":[\"Información_de_los_Sensores_Switch\"],\"show\":[\"Información_de_los_Sensores_Control_por_Temperatura\"]}}",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1290,
+        "y": 480,
+        "wires": [
+            [
+                "d7694227e16790fb"
+            ]
+        ]
+    },
+    {
+        "id": "bbe3758819d34835",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "192.168.1.6",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "b2adfc4191121edd",
+        "type": "ui_group",
+        "name": "Temperatura",
+        "tab": "baf08553386a4f30",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "31a6b9c47205aca9",
+        "type": "ui_group",
+        "name": "Humedad",
+        "tab": "baf08553386a4f30",
+        "order": 2,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "67bdf8e2d34a61fa",
+        "type": "ui_group",
+        "name": "Monóxido de Carbono",
+        "tab": "baf08553386a4f30",
+        "order": 3,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "aa2be71fdb279bc1",
+        "type": "ui_group",
+        "name": "Switch",
+        "tab": "baf08553386a4f30",
+        "order": 5,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "a9e40686d841dd4c",
+        "type": "ui_group",
+        "name": "Posición",
+        "tab": "baf08553386a4f30",
+        "order": 4,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "aea4105647a1b4cf",
+        "type": "ui_group",
+        "name": "Control por Temperatura",
+        "tab": "baf08553386a4f30",
+        "order": 6,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "9ce0bff7dffb0cea",
+        "type": "MySQLdatabase",
+        "name": "",
+        "host": "192.168.1.6",
+        "port": "3306",
+        "db": "db_sensores",
+        "tz": "",
+        "charset": "UTF8"
+    },
+    {
+        "id": "d9660f39c8927b5c",
+        "type": "ui_group",
+        "name": "Tipo de Control",
+        "tab": "baf08553386a4f30",
+        "order": 7,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "baf08553386a4f30",
+        "type": "ui_tab",
+        "name": "Información de los Sensores",
+        "icon": "dashboard",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    }
+]
